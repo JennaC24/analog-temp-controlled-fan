@@ -41,7 +41,7 @@ The TMP36 produces a voltage that scales linearly with temperature. An OP484 dif
 
 The final (Milestone 3) circuit is built from the following stages. Values shown are the ones used in the final design unless noted otherwise.
 
-### Temperature Sensor — TMP36
+### Temperature Sensor (TMP36)
 
 **Role:** Converts ambient temperature into a proportional voltage.
 
@@ -51,7 +51,7 @@ The final (Milestone 3) circuit is built from the following stages. Values shown
 
 **Why this component:** The TMP36 was chosen because its output scales linearly with temperature, which makes it straightforward to interface with downstream op-amp stages. Its −40°C to +125°C range comfortably covers room-temperature and elevated operating conditions, its built-in 0.5V offset keeps the output positive even at negative temperatures, and its accuracy (~±1°C) and 10 mV/°C scale factor made it reliable without needing extra calibration circuitry.
 
-### Differential Amplifier — OP484
+### Differential Amplifier (OP484)
 
 **Role:** Outputs the difference between the sensor voltage and a fixed reference, so the response scales continuously with temperature instead of snapping between two states like the comparator used in Milestone 1.
 
@@ -62,7 +62,7 @@ The final (Milestone 3) circuit is built from the following stages. Values shown
 **Why this component:**
 The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifically because it's rail-to-rail. The differential amplifier's output needs to represent low voltages accurately near 0V and scale cleanly up to 5V. A non-rail-to-rail op-amp like the OP97 can't reach or resolve those extremes correctly. Gain was deliberately kept at 1 at this stage; amplifying here would also amplify the noise the op-amp itself introduces, which is why amplification was pushed to a later, dedicated stage.
 
-### Second-Order Active Low-Pass Filter — OP484
+### Second-Order Active Low-Pass Filter (OP484)
 
 **Role:** Removes high-frequency noise introduced by the differential amplifier before the signal is amplified further.
 
@@ -72,7 +72,7 @@ The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifi
 
 **Why this component:** This replaced the first-order passive RC filter used in Milestone 2. The passive filter worked fine in isolation, but the stage after it would draw a small amount of current from it, shifting the effective cutoff frequency. An active filter isolates the RC network from that loading effect. Resistors and capacitors were kept equal specifically to hold the filter's gain at exactly 1. Gain above 1 makes a second-order active filter unstable, and above 3 it turns into an oscillator outright, so unity gain was a hard constraint here. The OP484 was used again for its rail-to-rail range, since the signal at this point is still well under 1V.
 
-### Non-Inverting Amplifier — OP484
+### Non-Inverting Amplifier (OP484)
 
 **Role:** Scales the filtered signal up to the 3–5V range the fan stage needs.
 
@@ -82,7 +82,7 @@ The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifi
 
 **Why this component:** An earlier version of this stage (Milestone 2) used the OP97 with a gain of 11x (R3 = 1kΩ, R4 = 10kΩ), which worked when the signal levels were in the 0–0.5V range feeding a 0–5V LED-driving output. In Milestone 3, the pre-amplified signal is under 1V and the OP97's non-rail-to-rail limitation produced incorrect output at these lower voltages, so the amplifier was rebuilt using the OP484.
 
-### Wien Bridge Oscillator — OP97
+### Wien Bridge Oscillator (OP97)
 
 **Role:** Generates a continuous high-frequency sine wave used to build a pulsed drive signal for the fan, since a DC motor's coil inductance and physical inertia cause it to stall under a low, steady drive voltage.
 
@@ -98,7 +98,7 @@ The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifi
 
 **How it works:** The oscillator's sine wave (centered at 0V) is fed into the comparator's inverting input, with the non-inverting input tied to ground. This makes the output switch between the amplifier's output voltage (V+) and 0V (V−, ground), producing a square wave whose "high" level equals the current temperature-scaled drive voltage.
 
-### Transistor — TIP31C (NPN)
+### Transistor (TIP31C NPN) 
 
 **Role:** Boosts current from what the op-amp stages can supply up to what the fan actually requires.
 
@@ -106,7 +106,7 @@ The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifi
 
 **Why this component:** Before the transistor stage, the circuit could only supply 20–40 mA (enough for an LED, such as in Milestones 1 and 2, but far short of the ~200 mA the 5V DC fan needs to run). The TIP31C was chosen to bridge that gap, amplifying the available current past the fan's operating threshold without needing a redesign of the earlier signal-conditioning stages.
 
-### Output — 5V DC Brushless Fan
+### Output (5V DC Brushless Fan)
 
 **Role:** Provides physical cooling, turning on past the trigger point and scaling its effective drive with temperature above that.
 
