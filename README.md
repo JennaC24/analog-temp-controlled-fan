@@ -117,6 +117,29 @@ Why this component: The fan needed to match the circuit's available voltage rang
 The full LTspice schematic is linked in the Project Manual and included in this repository (see [Repository Contents](#repository-contents)).
 
 ## Components and Tools
+### Core ICs
+
+- TMP36 temperature sensor: linear analog output, −40°C to +125°C range, 10 mV/°C with 0.5V offset
+- OP97: comparator (used in MS1 and MS2); non-rail-to-rail, single-supply operation
+- OP484: differential amplifier, active filter, and non-inverting amplifier stages (MS2/MS3); rail-to-rail input/output, needed for low-voltage accuracy
+- TIP31C: NPN epitaxial silicon transistor, current driver for the fan stage
+
+### Passive Components
+
+- Resistors: 1kΩ, 1.5kΩ, 2.2kΩ, 6.8kΩ, 10kΩ, 20kΩ, 47kΩ (values selected per stage, see Project Manual for derivations)
+- Capacitors: 1µF (MS2 passive filter), 4.7µF (MS3 active filter), 1nF (Wien bridge oscillator)
+
+### Output
+
+- 5V DC brushless fan (~30mm × 30mm, ~200 mA draw)
+- Red LED (used as a stand-in output in MS1/MS2, and in LTspice simulations in place of the fan since no 5V fan model exists in the LTspice library)
+
+### Tools & Software
+
+- LTspice: schematic capture, DC sweep, AC sweep/Bode plot, and transient simulation
+- Analog Discovery (with Waveforms/Network Analyzer): bench measurement, Bode plots, oscilloscope captures
+- Handheld multimeter (Extech): voltage/current verification on the breadboard
+- Breadboard prototyping
 
 ## Simulation and Validation
 
