@@ -142,7 +142,17 @@ The full LTspice schematic is linked in the Project Manual and included in this 
 - Breadboard prototyping
 
 ## Simulation and Validation
+Every building block was simulated in LTspice before being validated experimentally, generally following the same three-step process: 
 
+analytical calculation -> LTspice simulation -> breadboard measurement.
+
+**MS1 (Comparator/LED trigger):** DC sweep (.step temp -50 125 1) confirmed the comparator output jumped from 0V to 3V at the 24°C threshold (0.74V sensor output), matching the design equation exactly in simulation. On the bench, the OP97's non-rail-to-rail behavior meant the measured output was 2.26V instead of the ideal 3V, accounting for this brought calculated and measured current to a 0% error.
+
+**MS2 (Differential amp + passive filter + non-inverting amp):** AC/DC sweeps confirmed the differential amplifier scaled from 0V to 5V, the passive filter's cutoff landed at 15.9 Hz (calculated) vs. 14.3 Hz (measured, ~10.1% error), and the non-inverting amplifier's 11x gain matched analytical predictions within ~5.2% error.
+
+**MS3 (Active filter + oscillator + fan stage):** The second-order active filter's cutoff was calculated at 33.9 Hz, simulated at 33.95 Hz (0.15% error), and measured at 34 Hz (0.30% error). The Wien bridge oscillator was calculated to run at 23.4 kHz; simulation matched almost exactly (23 kHz, ~0.02% error), but the physical circuit measured only 11.6 kHz, roughly 50% off. This was traced to the OP97's slow slew rate (0.2 V/µs), which can't keep up with a 23.4 kHz square-wave-like swing at that amplitude, this was ultimately not a problem for the design, since the frequency and amplitude out of the oscillator only need to be "good enough" going into the comparator.
+
+Additional analysis exercises (Ohm's Law, comparator behavior, Thevenin/s-domain equivalents, phasor analysis, and complex power) were performed on individual building blocks to validate design choices (these are included in the Proof of Concept documents for each milestone).
 ## Design Evolution
 
 ## Demo
