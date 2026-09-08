@@ -112,7 +112,7 @@ The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifi
 
 **Specs:** Operates in the 3–5V range, draws ~200 mA, ~30mm × 30mm
 
-Why this component: The fan needed to match the circuit's available voltage range (3–5V) without exceeding what the power supply could provide. A brushless design was chosen specifically because it has a longer operational life (no brushes to wear out) and produces less electrical noise than a brushed motor — which matters here since the TMP36's analog output is small and noise-sensitive. It's also simple to wire into a breadboard prototype, needing only power and ground.
+**Why this component:** The fan needed to match the circuit's available voltage range (3–5V) without exceeding what the power supply could provide. A brushless design was chosen specifically because it has a longer operational life (no brushes to wear out) and produces less electrical noise than a brushed motor — which matters here since the TMP36's analog output is small and noise-sensitive. It's also simple to wire into a breadboard prototype, needing only power and ground.
 
 The full LTspice schematic is linked in the Project Manual and included in this repository (see [Repository Contents](#repository-contents)).
 
@@ -154,6 +154,44 @@ analytical calculation -> LTspice simulation -> breadboard measurement.
 
 Additional analysis exercises (Ohm's Law, comparator behavior, Thevenin/s-domain equivalents, phasor analysis, and complex power) were performed on individual building blocks to validate design choices (these are included in the Proof of Concept documents for each milestone).
 ## Design Evolution
+
+### Milestone 1 (Comparator + LED)
+
+A TMP36 feeds an OP97 comparator that switches an LED fully on/off at a fixed temperature threshold (24°C / 0.74V). One limitation of this design is the lack of proportional response to temperature.
+
+**Problem:** LED wouldn't light up. 
+
+**Cause:** broken ground channel on the breadboard. 
+
+**Fix:** bridged the gap with a jumper wire.
+
+### Milestone 2 (Differential amplifier + passive filter + non-inverting amp)
+
+Replaced the comparator with an OP484 differential amplifier so the output would scale continuously with temperature instead of snapping between two states. Added a first-order passive RC low-pass filter (15.9 Hz cutoff) to remove noise, and a non-inverting amplifier (gain of 11) to scale the signal toward a usable range.
+
+**Problem:** The original comparator-based design caused an abrupt 0V->5V jump. 
+
+**Fix:** switched to a differential amplifier for a continuous response.
+
+**Problem:** The OP97 wasn't rail-to-rail, so it couldn't accurately represent the scaling low-voltage signal. 
+
+**Fix:** switched to the rail-to-rail OP484.
+
+**Problem:** Amplifying before filtering amplified the op-amp's own noise along with the signal. 
+
+**Fix:** kept the differential amplifier at unity gain and placed the passive filter before the amplification stage.
+
+### Milestone 3 (Active filter + Wien bridge oscillator + transistor + fan)
+
+Replaced the LED with an actual 5V DC brushless fan, which required a real current driver and a way to keep the motor from stalling. Upgraded the first-order passive filter to a second-order active filter (to avoid the passive filter's cutoff frequency shifting under load), added a Wien bridge oscillator + comparator to generate a high-frequency pulse-drive signal, and added a TIP31C transistor to supply the ~200 mA the fan needs (versus the 20–40 mA the op-amps alone could provide).
+
+**Problem:** Second-order active filter became unstable when given gain > 1 (and turned into an oscillator above gain 3). 
+
+**Fix:** kept the filter's gain at 1 and moved amplification to a separate non-inverting amplifier stage (gain ≈ 5.7x).
+
+**Problem:** Replicating the MS2 non-inverting amplifier with the OP97 didn't work at the new signal levels (<1V). 
+
+**Fix:** implemented the non-inverting amplifier using the rail-to-rail OP484 instead.
 
 ## Demo
 
