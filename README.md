@@ -196,12 +196,36 @@ Replaced the LED with an actual 5V DC brushless fan, which required a real curre
 ## Demo
 
 ## Results
+The completed system reliably scales its response with temperature across all three stages of testing:
 
+- The differential amplifier + active filter chain produces a clean, temperature-proportional voltage with the noise from the OP484 stages suppressed by ~−40 dB/decade above the 34 Hz cutoff.
+- The non-inverting amplifier scales that signal into the 0–5V range the fan stage needs.
+- The Wien bridge oscillator + comparator + transistor stage reliably produces a switching drive signal in the tens-of-kHz range and current sufficient (>200 mA) to run the fan smoothly, even though the oscillator's measured frequency (11.6 kHz) fell well short of its 23.4 kHz design target due to the OP97's slew rate limitation.
+- End-to-end, the fan turns on once the temperature crosses the designed threshold and its effective drive scales with temperature above that point, meeting the original project goal of automatic, microcontroller-free thermal response.
+
+Across the project, measured results consistently landed within single-digit-to-low-double-digit percent error of analytical predictions for the filter and amplifier stages, while the oscillator and comparator stages showed larger deviations explained by specific op-amp non-idealities (slew rate, non-rail-to-rail output) rather than design errors. These are detailed with full percent-error calculations in each Proof of Concepts document.
 ## Challenges and What I Learned
-
+- Op-amp selection matters as much as the topology. The OP97 is a great cheap comparator but its non-rail-to-rail output and 0.2 V/µs slew rate caused real, measurable deviations from ideal behavior at multiple points in the design (MS1 comparator output, MS3 oscillator amplitude/frequency). Switching to the rail-to-rail OP484 for low-voltage stages fixed accuracy problems that no amount of resistor-value tuning could.
+- Filter placement and loading effects are easy to overlook. The first-order passive filter in MS2 worked fine in isolation but its cutoff frequency shifted once a real load was placed after it, motivating the move to an active filter in MS3, which isolates the RC network from downstream loading.
+- Stability constraints on gain aren't just theoretical. Trying to add gain directly into the second-order active filter pushed it into instability (and eventually into unwanted oscillation) once gain exceeded 3. This was a good reminder to separate filtering and amplification into distinct stages with well-defined, low gain at each step.
+- Debugging analog hardware requires methodical measurement, not guesswork. The MS1 grounding issue was only found by systematically probing sections of the breadboard with a multimeter rather than re-wiring at random.
+- Simulation and hardware won't always agree, and that's informative, not just an error to explain away. The 50% discrepancy between the simulated and measured Wien bridge oscillator frequency led directly to understanding the real limiting factor (slew rate) in the physical parts being used — and to the judgment call that the mismatch didn't actually matter for the system's function.
 ## Repository Contents
 
 ## References
+[1] Analog Devices, "OP97: Low Power, High Precision Operational Amplifier," Datasheet. Available: https://www.analog.com/media/en/technical-documentation/data-sheets/OP97.pdf
+
+[2] Lumimax Optoelectronic Technology, "LED5RED Red LED Datasheet." Available: https://mm.digikey.com/Volume0/opasdata/d220001/medias/docus/6822/%5BLumimax%5DLED5RED.pdf
+
+[3] Analog Devices, "TMP35/TMP36/TMP37: Low Voltage Temperature Sensors," Datasheet, Rev. H. Available: https://www.analog.com/media/en/technical-documentation/data-sheets/TMP35_36_37.pdf
+
+[4] Liberty Home Guard, "HVAC Control Module," Liberty Home Guard Glossary. Available: https://www.libertyhomeguard.com/glossary/hvac-control-module/
+
+[5] Analog Devices, "OP184/OP284/OP484: Precision Rail-to-Rail Input and Output Operational Amplifiers," Datasheet, Rev. J. Available: https://www.analog.com/media/en/technical-documentation/data-sheets/OP184_284_484.pdf
+
+[6] Multicomp, "DC Brushless Fan, 5V," Datasheet. Available: https://www.farnell.com/datasheets/1702593.pdf
+
+[7] Fairchild Semiconductor, "TIP31 Series (TIP31/TIP31A/TIP31B/TIP31C): NPN Epitaxial Silicon Transistor," Datasheet, Rev. A, Feb. 2000. Available: https://www.alldatasheet.com/datasheet-pdf/pdf/54797/FAIRCHILD/TIP31.html
 
 ## About Me
 **LinkedIn:** [linkedin.com/in/jenna-connelly](https://www.linkedin.com/in/jenna-connelly-42a4a73a4)\
