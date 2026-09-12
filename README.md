@@ -202,6 +202,11 @@ Replaced the LED with an actual 5V DC brushless fan, which required a real curre
 **Fix:** implemented the non-inverting amplifier using the rail-to-rail OP484 instead.
 
 ## Demo
+Pictured below is a marked-up image of our final physical circuit. Not pictured in this image is the 5V DC brushless fan and the TMP36 temperature sensor. In this image, you can see that we utilize the same OP484 to implement the differential amplifier, the second order active filter, and the non-inverting amplifier to maximize the usage of that op-amp. We then used an OP97 for the Wien Bridge Oscillator since the voltage is already amplified above 1V, allowing for the non-rail-to-rail op-amp to be sufficient for this design. We then used a new OP484 for the comparator to make implementation simple, rather than using the original OP484 and having a jumbled circuit. And lastly, we have the transistor to drive the current past the fan's threshold current for the fan to run. The output of the transistor is fed into the 5V DC brushless fan.  
+
+<p align="center">
+  <img src="Images/Marked_Up_Circuit.png" alt="Marked Up Circuit">
+</p>
 
 ## Results
 The completed system reliably scales its response with temperature across all three stages of testing:
