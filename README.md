@@ -76,7 +76,7 @@ The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifi
 
 **Equation:** Fc = 1/(2π√(R1·R2·C1·C2)), with R1 = R2 and C1 = C2
 
-**Values:** R1 = R2 = 1kΩ, C1 = C2 = 4.7µF → Fc ≈ 33.9–34 Hz (calculated 33.9 Hz, simulated 33.95 Hz, measured 34 Hz)
+**Values:** R1 = R2 = 1kΩ, C1 = C2 = 4.7µF -> Fc ≈ 33.9–34 Hz (calculated 33.9 Hz, simulated 33.95 Hz, measured 34 Hz)
 
 **Why this component:** This replaced the first-order passive RC filter used in Milestone 2. The passive filter worked fine in isolation, but the stage after it would draw a small amount of current from it, shifting the effective cutoff frequency. An active filter isolates the RC network from that loading effect. Resistors and capacitors were kept equal specifically to hold the filter's gain at exactly 1. Gain above 1 makes a second-order active filter unstable, and above 3 it turns into an oscillator outright, so unity gain was a hard constraint here. The OP484 was used again for its rail-to-rail range, since the signal at this point is still well under 1V.
 
@@ -96,7 +96,7 @@ The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifi
 
 **Equations:** f = 1/(2π·R·C); Gain = 1 + R1/R4 (must exceed 3 for sustained oscillation)
 
-**Values:** R2 = R3 = 6.8kΩ, C1 = C4 = 1nF → f ≈ 23.4 kHz (calculated and simulated); R4 = 6.8kΩ, R1 = 20kΩ → gain ≈ 3.95
+**Values:** R2 = R3 = 6.8kΩ, C1 = C4 = 1nF -> f ≈ 23.4 kHz (calculated and simulated); R4 = 6.8kΩ, R1 = 20kΩ → gain ≈ 3.95
 
 **Why these values:** The oscillation frequency needed to land in the 20–25 kHz range so the fan's motor could "average out" the pulses into what feels like smooth, continuous drive. The gain resistors were chosen to sit just above the theoretical minimum of 3 required to sustain oscillation since below 3 the oscillation converges to 0, and choosing a value just above 3 lets the amplitude grow until it's capped by the supply rails rather than growing unbounded. Experimentally, the physical circuit only reached ~11.6 kHz instead of the designed 23.4 kHz, which was traced to the OP97's slow slew rate (0.2 V/µs) (it can't switch fast enough at that amplitude). This didn't end up mattering for the design, since the oscillator only needs to produce a clean, symmetric sine wave centered at 0V for the comparator stage to work.
 
@@ -152,7 +152,9 @@ The full LTspice schematic is linked in the Project Manual and included in this 
 ## Simulation and Validation
 Every building block was simulated in LTspice before being validated experimentally, generally following the same three-step process: 
 
-analytical calculation -> LTspice simulation -> breadboard measurement.
+<p align="center">
+  <img src="Images/Simulation_Block_Diagram.jpg" alt="Simulation and Validation Block Diagram">
+</p>
 
 **MS1 (Comparator/LED trigger):** DC sweep (.step temp -50 125 1) confirmed the comparator output jumped from 0V to 3V at the 24°C threshold (0.74V sensor output), matching the design equation exactly in simulation. On the bench, the OP97's non-rail-to-rail behavior meant the measured output was 2.26V instead of the ideal 3V, accounting for this brought calculated and measured current to a 0% error.
 
