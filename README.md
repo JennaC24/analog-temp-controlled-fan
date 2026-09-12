@@ -59,6 +59,12 @@ The final (Milestone 3) circuit is built from the following stages. Values shown
 
 **Why this component:** The TMP36 was chosen because its output scales linearly with temperature, which makes it straightforward to interface with downstream op-amp stages. Its −40°C to +125°C range comfortably covers room-temperature and elevated operating conditions, its built-in 0.5V offset keeps the output positive even at negative temperatures, and its accuracy (~±1°C) and 10 mV/°C scale factor made it reliable without needing extra calibration circuitry.
 
+<p align="center">
+  <img src="Images/Temperature_Sensor_Schematic.png" alt="Temperature Sensor Schematic" width="300">
+</p>
+
+The picture above shows the voltage source used to represent the TMP36 in LTspice, since the TMP36 isn't a component in LTspice's library. The source is defined by the function V = 0.01·temp + 0.5, stepped over a range of −50°C to 125°C in 1° increments, so the simulation can be swept across the sensor's full operating range rather than tested at a single fixed temperature.
+
 ### Differential Amplifier (OP484)
 
 **Role:** Outputs the difference between the sensor voltage and a fixed reference, so the response scales continuously with temperature instead of snapping between two states like the comparator used in Milestone 1.
@@ -70,6 +76,12 @@ The final (Milestone 3) circuit is built from the following stages. Values shown
 **Why this component:**
 The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifically because it's rail-to-rail. The differential amplifier's output needs to represent low voltages accurately near 0V and scale cleanly up to 5V. A non-rail-to-rail op-amp like the OP97 can't reach or resolve those extremes correctly. Gain was deliberately kept at 1 at this stage; amplifying here would also amplify the noise the op-amp itself introduces, which is why amplification was pushed to a later, dedicated stage.
 
+<p align="center">
+  <img src="Images/Differential_Amplifier_Schematic.png" alt="Differential Amplifier Schematic" width="350">
+</p>
+
+The picture above shows the OP484 wired as a differential amplifier. The sensor voltage feeds the non-inverting input (Vin+) through R7, and the fixed 0.33V reference feeds the inverting input (Vin−) through an equal-value resistor. R8 provides feedback from the output back to Vin−, and because R7 = R8, the gain simplifies to 1. This configuration outputs the raw voltage difference between the sensor and reference without amplifying either input individually.
+
 ### Second-Order Active Low-Pass Filter (OP484)
 
 **Role:** Removes high-frequency noise introduced by the differential amplifier before the signal is amplified further.
@@ -79,6 +91,13 @@ The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifi
 **Values:** R1 = R2 = 1kΩ, C1 = C2 = 4.7µF -> Fc ≈ 33.9–34 Hz (calculated 33.9 Hz, simulated 33.95 Hz, measured 34 Hz)
 
 **Why this component:** This replaced the first-order passive RC filter used in Milestone 2. The passive filter worked fine in isolation, but the stage after it would draw a small amount of current from it, shifting the effective cutoff frequency. An active filter isolates the RC network from that loading effect. Resistors and capacitors were kept equal specifically to hold the filter's gain at exactly 1. Gain above 1 makes a second-order active filter unstable, and above 3 it turns into an oscillator outright, so unity gain was a hard constraint here. The OP484 was used again for its rail-to-rail range, since the signal at this point is still well under 1V.
+
+<p align="center">
+  <img src="Images/Second_Order_Active_Filter_Schematic.png" alt="Second Order Active Filter Schematic" width="500">
+</p>
+
+The picture above shows the OP484 wired as a second-order active low-pass filter. Two equal resistors run in series from Vin to the amplifier's non-inverting input, with the first capacitor bridging the midpoint of the resistors to the output, and the second capacitor bridging the non-inverting input to ground. Vin− is tied directly to the output, forming the feedback loop that sets the filter's gain to 1.
+
 
 ### Non-Inverting Amplifier (OP484)
 
@@ -99,6 +118,12 @@ The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifi
 **Values:** R2 = R3 = 6.8kΩ, C1 = C4 = 1nF -> f ≈ 23.4 kHz (calculated and simulated); R4 = 6.8kΩ, R1 = 20kΩ → gain ≈ 3.95
 
 **Why these values:** The oscillation frequency needed to land in the 20–25 kHz range so the fan's motor could "average out" the pulses into what feels like smooth, continuous drive. The gain resistors were chosen to sit just above the theoretical minimum of 3 required to sustain oscillation since below 3 the oscillation converges to 0, and choosing a value just above 3 lets the amplitude grow until it's capped by the supply rails rather than growing unbounded. Experimentally, the physical circuit only reached ~11.6 kHz instead of the designed 23.4 kHz, which was traced to the OP97's slow slew rate (0.2 V/µs) (it can't switch fast enough at that amplitude). This didn't end up mattering for the design, since the oscillator only needs to produce a clean, symmetric sine wave centered at 0V for the comparator stage to work.
+
+<p align="center">
+  <img src="Images/Wien_Bridge_Oscillator_Schematic.png" alt="Wien Bridge Oscillator Schematic" width="300">
+</p>
+
+The picture above shows the Wien bridge feedback network built from R2/C1 in series and R3/C4 in parallel, feeding the OP97's non-inverting input. The op-amp is configured as a non-inverting amplifier via R1 and R4, with gain set just above the theoretical minimum of 3 needed to sustain oscillation. Below that threshold, the output decays to 0V instead of oscillating.
 
 ### Comparator
 
