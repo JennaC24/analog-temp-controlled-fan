@@ -213,6 +213,7 @@ Across the project, measured results consistently landed within single-digit-to-
 
 ## Repository Contents
 
+```
 ├── Documentation/
 │   ├── Presentations/
 │   │   ├── Omega Lab Milestone 1.pdf
@@ -227,6 +228,7 @@ Across the project, measured results consistently landed within single-digit-to-
 │
 ├── Images/
 └── README.md
+```
 
 ## References
 [1] Analog Devices, "OP97: Low Power, High Precision Operational Amplifier," Datasheet. Available: https://www.analog.com/media/en/technical-documentation/data-sheets/OP97.pdf
