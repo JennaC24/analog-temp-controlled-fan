@@ -88,14 +88,6 @@ The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifi
 
 **Why this component:** An earlier version of this stage (Milestone 2) used the OP97 with a gain of 11x (R3 = 1kΩ, R4 = 10kΩ), which worked when the signal levels were in the 0–0.5V range feeding a 0–5V LED-driving output. In Milestone 3, the pre-amplified signal is under 1V and the OP97's non-rail-to-rail limitation produced incorrect output at these lower voltages, so the amplifier was rebuilt using the OP484.
 
-### Transistor (TIP31C NPN) 
-
-**Role:** Boosts current from what the op-amp stages can supply up to what the fan actually requires.
-
-**Equation:** Iout = hFE · Ib, with hFE ≈ 25–50 and Ib ≈ 20–40 mA
-
-**Why this component:** Before the transistor stage, the circuit could only supply 20–40 mA (enough for an LED, such as in Milestones 1 and 2, but far short of the ~200 mA the 5V DC fan needs to run). The TIP31C was chosen to bridge that gap, amplifying the available current past the fan's operating threshold without needing a redesign of the earlier signal-conditioning stages.
-
 ### Wien Bridge Oscillator (OP97)
 
 **Role:** Generates a continuous high-frequency sine wave used to build a pulsed drive signal for the fan, since a DC motor's coil inductance and physical inertia cause it to stall under a low, steady drive voltage.
@@ -111,6 +103,14 @@ The OP484 was used here (replacing the OP97 comparator from Milestone 1) specifi
 **Role:** Converts the oscillator's sine wave into a square wave that switches the fan drive on and off at high frequency.
 
 **How it works:** The oscillator's sine wave (centered at 0V) is fed into the comparator's inverting input, with the non-inverting input tied to ground. This makes the output switch between the amplifier's output voltage (V+) and 0V (V−, ground), producing a square wave whose "high" level equals the current temperature-scaled drive voltage.
+
+### Transistor (TIP31C NPN) 
+
+**Role:** Boosts current from what the op-amp stages can supply up to what the fan actually requires.
+
+**Equation:** Iout = hFE · Ib, with hFE ≈ 25–50 and Ib ≈ 20–40 mA
+
+**Why this component:** Before the transistor stage, the circuit could only supply 20–40 mA (enough for an LED, such as in Milestones 1 and 2, but far short of the ~200 mA the 5V DC fan needs to run). The TIP31C was chosen to bridge that gap, amplifying the available current past the fan's operating threshold without needing a redesign of the earlier signal-conditioning stages.
 
 ### Output (5V DC Brushless Fan)
 
