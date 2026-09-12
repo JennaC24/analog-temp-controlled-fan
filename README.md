@@ -39,7 +39,9 @@ The project was developed iteratively through three milestones, beginning with a
 ## System Design
 The signal flows through six stages, each conditioning the output of the last so it falls within the input range the next stage expects:
 
-Sensing -> Comparing -> Filtering -> Amplifying -> Pulse-driving -> Output
+<p align="center">
+  <img src="Images/System_Design_Block_Diagram.jpg" alt="System Design Block Diagram">
+</p>
 
 The TMP36 produces a voltage that scales linearly with temperature. An OP484 differential amplifier subtracts a fixed reference voltage from that signal, so the output tracks how far above a baseline the temperature is, rather than switching between two fixed states like a simple comparator would. That signal is cleaned up by a second-order active low-pass filter, then boosted by a non-inverting amplifier to a range the fan stage can use. Because the fan is a DC motor with physical inertia and coil inductance, it can't be driven by a steady low-current analog signal without stalling. As a result, a Wien bridge oscillator and comparator convert the amplified signal into a high-frequency switching (pulsed) drive signal, and a transistor supplies the current the fan actually needs. The full derivation, values, and reasoning for each stage are below in [Circuit Design](#circuit-design).
 
