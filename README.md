@@ -210,7 +210,23 @@ Across the project, measured results consistently landed within single-digit-to-
 - Stability constraints on gain aren't just theoretical. Trying to add gain directly into the second-order active filter pushed it into instability (and eventually into unwanted oscillation) once gain exceeded 3. This was a good reminder to separate filtering and amplification into distinct stages with well-defined, low gain at each step.
 - Debugging analog hardware requires methodical measurement, not guesswork. The MS1 grounding issue was only found by systematically probing sections of the breadboard with a multimeter rather than re-wiring at random.
 - Simulation and hardware won't always agree, and that's informative, not just an error to explain away. The 50% discrepancy between the simulated and measured Wien bridge oscillator frequency led directly to understanding the real limiting factor (slew rate) in the physical parts being used — and to the judgment call that the mismatch didn't actually matter for the system's function.
+
 ## Repository Contents
+
+├── Documentation/
+│   ├── Presentations/
+│   │   ├── Omega Lab Milestone 1.pdf
+│   │   ├── Omega Lab Milestone 2.pdf
+│   │   └── Omega Lab Milestone 3.pdf
+│   ├── Project Manual/
+│   │   └── Project Manual MS3.pdf
+│   └── Proof of Concepts/
+│       ├── Proof of Concepts MS1.pdf
+│       ├── Proof of Concepts MS2.pdf
+│       └── Proof of Concepts MS3.pdf
+│
+├── Images/
+└── README.md
 
 ## References
 [1] Analog Devices, "OP97: Low Power, High Precision Operational Amplifier," Datasheet. Available: https://www.analog.com/media/en/technical-documentation/data-sheets/OP97.pdf
